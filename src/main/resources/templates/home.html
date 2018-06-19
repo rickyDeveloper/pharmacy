@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head>
+        <title>Pharmacy App</title>
+
+        <link rel="stylesheet" type="text/css"
+              href="webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
+
+        <link rel="stylesheet" th:href="@{/css/main.css}"
+              href="./css/main.css" />
+
+
+        <script src="/webjars/jquery/3.2.1/jquery.min.js"></script>
+
+        <script type="text/javascript"
+                src="webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+    </head>
+
+    <body>
+
+    <div class="container">
+
+        <div class="starter-template">
+            <h1>Welcome to Pharmacy App!</h1>
+
+            <p>Click <a th:href="@{/approval}">here</a> to see approval page</p>
+        </div>
+
+    </div>
+
+    </body>
+
+
+</html>
