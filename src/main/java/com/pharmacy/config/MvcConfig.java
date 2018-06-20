@@ -1,4 +1,4 @@
-package hello;
+package com.pharmacy.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -11,7 +11,8 @@ public class MvcConfig implements WebMvcConfigurer {
         registry.addViewController("/home").setViewName("home");
         registry.addViewController("/").setViewName("home");
         registry.addViewController("/login").setViewName("login");
-        registry.addViewController("/approval").setViewName("approval");
+        registry.addViewController("/prescriptions").setViewName("prescriptions");
+
     }
 
 }

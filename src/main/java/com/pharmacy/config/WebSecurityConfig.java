@@ -1,4 +1,4 @@
-package hello;
+package com.pharmacy.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,13 +31,28 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Override
     public UserDetailsService userDetailsService() {
-        UserDetails user =
+        UserDetails patient =
              User.withDefaultPasswordEncoder()
-                .username("user")
+                .username("patient")
                 .password("password")
                 .roles("USER")
                 .build();
 
-        return new InMemoryUserDetailsManager(user);
+        UserDetails doctor =
+                User.withDefaultPasswordEncoder()
+                        .username("doctor")
+                        .password("password")
+                        .roles("DOCTOR")
+                        .build();
+
+
+        UserDetails pharmacist =
+                User.withDefaultPasswordEncoder()
+                        .username("pharmacist")
+                        .password("password")
+                        .roles("PHARMACIST")
+                        .build();
+
+        return new InMemoryUserDetailsManager(patient,doctor,pharmacist);
     }
 }
