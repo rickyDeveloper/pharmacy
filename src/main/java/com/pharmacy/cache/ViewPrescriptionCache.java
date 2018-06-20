@@ -1,11 +1,14 @@
 package com.pharmacy.cache;
 
 import com.pharmacy.domain.ViewPrescription;
+import com.pharmacy.enums.ViewPrescriptionStatus;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Created by vikasnaiyar on 20/06/18.
@@ -70,6 +73,42 @@ public class ViewPrescriptionCache {
         }
 
         return viewPrescription;
+    }
+
+    public List<ViewPrescription> getUserPrescriptionByState(Long prescriptionId, ViewPrescriptionStatus status) {
+
+        log.info("getUserPrescriptionByState Trying to lookup data for prescriptionId={} and status={}", prescriptionId, status.name());
+
+        List<ViewPrescription> prescriptions = requests.values().stream()
+                    .filter(map -> map.containsKey(prescriptionId))
+                    .filter(map -> status.name().equals(map.get(prescriptionId).getStatus()))
+                .map(map ->  map.get(prescriptionId)).collect(Collectors.toList());
+
+        return prescriptions;
+    }
+
+
+    public boolean approvePrescriptionRequest(Long presId, Long userId, ViewPrescriptionStatus status) {
+
+        if(requests.containsKey(userId)) {
+            log.info("approvePrescriptionRequest Found existing map for userId {}", userId);
+            ViewPrescription viewPrescription = requests.get(userId).get(presId);
+
+            if(viewPrescription != null) {
+                log.info("approvePrescriptionRequest updating status for presId {}", presId);
+                viewPrescription.setStatus(status.name());
+            } else {
+                log.info("approvePrescriptionRequest didn't find presId {}", presId);
+            }
+
+            return true;
+
+        } else {
+            log.info("Pres request={} not found for presId {}", presId, userId);
+            return false;
+
+        }
+
     }
 
 }

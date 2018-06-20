@@ -47,9 +47,6 @@ public class PrescriptionController {
     @Autowired
     private UserRepository userRepository;
 
-
-
-
     @RequestMapping(value = "/prescriptions", method = RequestMethod.GET)
     public ModelAndView getAllPrescriptions() {
         ModelAndView modelAndView = new ModelAndView("prescriptions");
@@ -134,6 +131,21 @@ public class PrescriptionController {
 
         ModelAndView modelAndView = new ModelAndView("approval");
         modelAndView.addObject("approval", viewPrescription);
+
+        return modelAndView;
+    }
+
+
+    @RequestMapping(value = "/prescriptions/approve/{id}/{userId}", method = RequestMethod.GET)
+    public ModelAndView approvePrescriptionAccess(@PathVariable("id") Long id, @PathVariable("userId") Long userId) {
+
+        log.info("Registering approval request for user {} for presciption id {}",
+                userId, id
+        );
+
+        ViewPrescriptionCache.getINSTANCE().approvePrescriptionRequest(id,userId,ViewPrescriptionStatus.ACCEPTED);
+
+        ModelAndView modelAndView = new ModelAndView("approval");
 
         return modelAndView;
     }

@@ -3,21 +3,6 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <title>Prescriptions List</title>
-
-    <script>
-
-        function submitForm() {
-            var http = new XMLHttpRequest();
-            http.open("POST", "<<whereverTheFormIsGoing>>", true);
-            http.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-            var params = "search=" + <<get search value>>; // probably use document.getElementById(...).value
-                        http.send(params);
-                        http.onload = function() {
-                            alert(http.responseText);
-                        }
-                        }
-
-    </script>
 </head>
 <body>
 

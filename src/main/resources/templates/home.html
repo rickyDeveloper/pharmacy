@@ -6,9 +6,6 @@
         <link rel="stylesheet" type="text/css"
               href="webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
 
-        <link rel="stylesheet" th:href="@{/css/main.css}"
-              href="./css/main.css" />
-
 
         <script src="/webjars/jquery/3.2.1/jquery.min.js"></script>
 
@@ -25,7 +22,10 @@
         <div class="starter-template">
             <h1>Welcome to Pharmacy App!</h1>
 
-            <p>Click <a th:href="@{/users}">here</a> to view users list</p>
+            <p>Click <a th:href="@{/actions}">here</a> to view prescriptions list</p>
+
+            <p>Click <a th:href="@{/users}">here</a> to view all user list</p>
+
         </div>
 
     </div>
