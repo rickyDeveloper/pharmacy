@@ -11,5 +11,7 @@ public class PrescriptionVO {
 
     private Long userId;
 
+    private String status;
+
     private String text;
 }

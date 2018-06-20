@@ -1,8 +1,10 @@
 package com.pharmacy.controller;
 
+import com.pharmacy.cache.ViewPrescriptionCache;
 import com.pharmacy.domain.Prescription;
 import com.pharmacy.domain.User;
 import com.pharmacy.domain.ViewPrescription;
+import com.pharmacy.enums.ViewPrescriptionStatus;
 import com.pharmacy.model.PrescriptionVO;
 import com.pharmacy.repository.PrescriptionRepository;
 import com.pharmacy.repository.UserRepository;
@@ -18,6 +20,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Created by vikasnaiyar on 20/06/18.
@@ -25,6 +30,7 @@ import java.util.List;
 @Controller
 @Slf4j
 public class PrescriptionController {
+
 
     @Autowired
     private UserDetails userDetails;
@@ -40,6 +46,7 @@ public class PrescriptionController {
 
     @Autowired
     private UserRepository userRepository;
+
 
 
 
@@ -69,9 +76,27 @@ public class PrescriptionController {
             User user = userRepository.findByUserName(userDetails.getLoggedInUserName());
 
             if(user != null) {
-                  List<ViewPrescription> viewPrescriptions =  viewPrescriptionRepository.findByUserId(userId);
-                    log.info("Found {} prescription for user is {}",viewPrescriptions.size(),
-                        userDetails.getLoggedInUserName() );
+                Map<Long,ViewPrescription> viewPrescriptionMap =  ViewPrescriptionCache.getINSTANCE().getPrescriptionRequestByUserId(user.getId());
+                    log.info("Found {} prescription for user is {}",viewPrescriptionMap.size(),
+                            user.getId() );
+
+                prescriptionVOs = prescriptions.stream().map(p -> {
+                          PrescriptionVO prescriptionVO = new PrescriptionVO();
+                          prescriptionVO.setId(p.getId());
+                          prescriptionVO.setUserId(p.getUserId());
+                          prescriptionVO.setStatus(ViewPrescriptionStatus.NOT_REQUESTED.name()); //DEFAULT VALUE
+                          viewPrescriptionMap.values().stream().filter(vp -> vp.getPrescriptionId().equals(p.getId())).forEach(vp -> {
+                              if(ViewPrescriptionStatus.ACCEPTED.name().equals(vp.getStatus())) {
+                                  prescriptionVO.setText(p.getText());
+                              }
+                              prescriptionVO.setStatus(vp.getStatus());
+                          });
+
+                            log.info("Prescription has id {} and status = {}",prescriptionVO.getId(),
+                                    prescriptionVO.getStatus());
+
+                          return prescriptionVO;
+                  }).collect(Collectors.toList());
             }
         }
 
@@ -79,5 +104,37 @@ public class PrescriptionController {
         modelAndView.addObject("prescriptions", prescriptionVOs);
         return modelAndView;
 
+    }
+
+
+    @RequestMapping(value = "/prescriptions/requests/{id}", method = RequestMethod.GET)
+    public ModelAndView requestAccessToPrescription(@PathVariable("id") Long id) {
+        log.info("Registering access request for user {} for presciption id {}",
+                userDetails.getLoggedInUserName(), id
+        );
+
+        User user = userRepository.findByUserName(userDetails.getLoggedInUserName());
+
+        ViewPrescription viewPrescription = ViewPrescriptionCache.getINSTANCE().getPrescriptionRequest(id, user.getId());
+
+        if(viewPrescription != null) {
+            log.info("Found approval request with id={}, presId={} and status={}", viewPrescription.getUserId(), viewPrescription.getPrescriptionId(), viewPrescription.getStatus());
+            viewPrescription.setStatus(ViewPrescriptionStatus.PENDING.name());
+        } else {
+            viewPrescription = new ViewPrescription();
+            Random rand = new Random();
+            viewPrescription.setId(rand.nextInt());
+            viewPrescription.setPrescriptionId(id);
+            viewPrescription.setUserId(user.getId());
+            viewPrescription.setStatus(ViewPrescriptionStatus.PENDING.name());
+            log.info("Creating new approval request with id={}, presId={} and status={}", viewPrescription.getUserId(), viewPrescription.getPrescriptionId(), viewPrescription.getStatus());
+        }
+
+        ViewPrescriptionCache.getINSTANCE().addPrescriptionRequest(viewPrescription);
+
+        ModelAndView modelAndView = new ModelAndView("approval");
+        modelAndView.addObject("approval", viewPrescription);
+
+        return modelAndView;
     }
 }

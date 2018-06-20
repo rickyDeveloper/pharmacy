@@ -3,10 +3,7 @@ package com.pharmacy.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -20,11 +17,17 @@ public class ViewPrescription implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @EmbeddedId
-    private ViewPrescriptionPK pk;
+    @Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
 
+    @Column(name = "prescription_id")
+    private Long prescriptionId;
+
+    @Column(name = "user_Id")
+    private Long userId;
 
     @Column(name = "status")
-    private int status;
+    private String status;
 
 }

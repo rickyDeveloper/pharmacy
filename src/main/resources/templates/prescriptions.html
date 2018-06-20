@@ -3,6 +3,21 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <title>Prescriptions List</title>
+
+    <script>
+
+        function submitForm() {
+            var http = new XMLHttpRequest();
+            http.open("POST", "<<whereverTheFormIsGoing>>", true);
+            http.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            var params = "search=" + <<get search value>>; // probably use document.getElementById(...).value
+                        http.send(params);
+                        http.onload = function() {
+                            alert(http.responseText);
+                        }
+                        }
+
+    </script>
 </head>
 <body>
 
@@ -10,13 +25,27 @@
     <h2>Prescriptions List</h2>
     <table class="table table-striped">
         <tr>
-            <th>Id</th>
+            <th>P_Id</th>
+            <th>User Id</th>
+            <th>Status</th>
             <th>Text</th>
         </tr>
         <tr th:each="prescription : ${prescriptions}">
             <td th:text="${prescription.id}"></td>
             <td th:text="${prescription.userId}"></td>
-            <td th:text="${prescription.text}"></td>
+            <td th:text="${prescription.status}"></td>
+
+            <div th:switch="${prescription.status}">
+                <td th:case="'ACCEPTED'" th:text="${prescription.text}"></td>
+                <td th:case="'NOT_REQUESTED'"><a th:href="@{/prescriptions/requests/}+${prescription.id}">Request access</a></td>
+                <td th:case="'PENDING'">
+                    <!--<form action="#" th:action="@{/prescriptions/requests/}+${prescription.id}" th:object="${prescription.id}" method="post">
+                        <input type="button" th:text="Request Access" />
+                        <input type="submit" />
+                    </form>-->
+                </td>
+            </div>
+
         </tr>
     </table>
 </div>
